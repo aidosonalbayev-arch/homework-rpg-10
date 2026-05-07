@@ -14,12 +14,19 @@ public class GuildHall implements GuildMediator {
 
     @Override
     public void register(GuildMember member) {
-        // TODO: add the member to the topic lists it should receive.
+        for (String topic : member.getSubscribedTopics()) {
+            addSubscriber(topic, member);
+        }
     }
 
     @Override
     public void dispatch(String topic, GuildMember from, String payload) {
-        // TODO: notify registered members for the topic without direct colleague calls.
+        List<GuildMember> subscribers = subscribersFor(topic);
+        for (GuildMember member : subscribers) {
+            if (member != from) {
+                member.receive(topic, from, payload);
+            }
+        }
     }
 
     protected void addSubscriber(String topic, GuildMember member) {
